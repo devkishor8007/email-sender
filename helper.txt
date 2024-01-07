@@ -1,0 +1,2 @@
+go mod init github.com/devkishor8007/email-sender
+go get github.com/labstack/echo/v4
