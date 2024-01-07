@@ -11,11 +11,11 @@ type ErrorResponse struct {
 type SuccessResponse struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
-	Data    models.EmailSender `json:"data"`
+	Data    models.EmailTemplate `json:"data"`
 }
 
 type SuccessResponseList struct {
 	Status  int               `json:"status"`
 	Message string            `json:"message"`
-	Data    []models.EmailSender `json:"data"`
+	Data    []models.EmailTemplate `json:"data"`
 }

@@ -14,15 +14,17 @@ import (
 
 func CreateEmailTemplates(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var inputs models.EmailSender
+	var inputs models.EmailTemplate
 	defer cancel()
 
 	if err := c.Bind(&inputs); err != nil {
 		return c.JSON(400, responses.ErrorResponse{Status: 400, Message: "Bad Request", Data: err.Error()})
 	}
 
-	newEmailTemplate := models.EmailSender{
+	newEmailTemplate := models.EmailTemplate{
 		ID:         primitive.NewObjectID(),
+		Topic:      inputs.Topic,
+		Status:     inputs.Status,
 		Subject:    inputs.Subject,
 		Body:       inputs.Body,
 		Created_At: primitive.NewDateTimeFromTime(time.Now()),
@@ -39,7 +41,7 @@ func CreateEmailTemplates(c echo.Context) error {
 
 func GetEmailTemplates(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	var emailSender []models.EmailSender
+	var emailTemplates []models.EmailTemplate
 	defer cancel()
 
 	filter := bson.M{}
@@ -55,12 +57,12 @@ func GetEmailTemplates(c echo.Context) error {
 	result, err := database.GetCollection("email_templates").Aggregate(ctx, pipeline)
 
 	for result.Next(ctx) {
-		var singleEmailResult models.EmailSender
-		if err = result.Decode(&singleEmailResult); err != nil {
+		var singleEmailTemplate models.EmailTemplate
+		if err = result.Decode(&singleEmailTemplate); err != nil {
 			return c.JSON(500, responses.ErrorResponse{Status: 500, Message: "error", Data: err.Error()})
 		}
 
-		emailSender = append(emailSender, singleEmailResult)
+		emailTemplates = append(emailTemplates, singleEmailTemplate)
 	}
-	return c.JSON(201, responses.SuccessResponseList{Status: 200, Message: "success", Data: emailSender})
+	return c.JSON(201, responses.SuccessResponseList{Status: 200, Message: "success", Data: emailTemplates})
 }
