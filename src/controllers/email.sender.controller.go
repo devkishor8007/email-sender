@@ -7,6 +7,7 @@ import (
 	"github.com/devkishor8007/email-sender/src/database"
 	"github.com/devkishor8007/email-sender/src/models"
 	"github.com/devkishor8007/email-sender/src/responses"
+	"github.com/devkishor8007/email-sender/src/utilis/validate"
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,6 +20,12 @@ func CreateEmailTemplates(c echo.Context) error {
 
 	if err := c.Bind(&inputs); err != nil {
 		return c.JSON(400, responses.ErrorResponse{Status: 400, Message: "Bad Request", Data: err.Error()})
+	}
+
+	validateStatus := validate.ValidateStatus(inputs.Status)
+
+	if validateStatus != nil {
+		return c.JSON(400, responses.ErrorResponse{Status: 400, Message: "Bad Request", Data: validateStatus.Error()})
 	}
 
 	newEmailTemplate := models.EmailTemplate{
