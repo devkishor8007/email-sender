@@ -3,22 +3,21 @@ package database
 import (
 	"context"
 	"log"
-	// "os"
+	"os"
 	"time"
 
-	// "github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func ConnectDB() *mongo.Client {
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	log.Fatal("Error loading .env file:", err)
-	// }
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
 
-	// uri := os.Getenv("MONGO_URI")
-	uri := "mongodb://127.0.0.1:27017/"
+	uri := os.Getenv("MONGO_URI")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))

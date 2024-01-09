@@ -2,13 +2,18 @@ package controllers
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/devkishor8007/email-sender/src/database"
 	"github.com/devkishor8007/email-sender/src/models"
 	"github.com/devkishor8007/email-sender/src/responses"
+	"github.com/devkishor8007/email-sender/src/utilis"
 	"github.com/devkishor8007/email-sender/src/utilis/validate"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -47,9 +52,25 @@ func CreateEmailTemplates(c echo.Context) error {
 }
 
 func GetEmailTemplates(c echo.Context) error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	var emailTemplates []models.EmailTemplate
 	defer cancel()
+
+	domain := os.Getenv("DOMAIN_URL")
+	mailgun_api_key := os.Getenv("MAILGUN_API_KEY")
+	from_email := os.Getenv("FROM_EMAIL")
+
+	if len(domain) < 0 || len(mailgun_api_key) < 0 || len(from_email) < 0 {
+		log.Fatal("empty domain or mailgun api key")
+	}
+
+	emailResponse := utilis.SendSimpleMessageP(domain, mailgun_api_key, from_email)
+
+	fmt.Println(emailResponse)
 
 	filter := bson.M{}
 
