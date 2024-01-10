@@ -11,12 +11,44 @@ import (
 	"github.com/devkishor8007/email-sender/src/responses"
 	"github.com/devkishor8007/email-sender/src/utilis"
 	"github.com/devkishor8007/email-sender/src/utilis/validate"
+	"github.com/go-co-op/gocron/v2"
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
+func RunJob() {
+	s, _ := gocron.NewScheduler()
+
+	j, _ := s.NewJob(
+		gocron.CronJob(
+			"1 * * * *", 
+			false,
+		),
+		gocron.NewTask(
+			func(a string, b int) {
+				fmt.Println(a, b)
+			},
+			"hello",
+			1,
+		),
+	)
+
+	fmt.Println(j.ID())
+
+	fmt.Println("start....")
+	go s.Start()
+
+}
+
+func TestJob(c echo.Context) error {
+	RunJob()
+
+	return c.JSON(201, responses.SuccessResponse{Status: 201, Message: "test job"})
+
+}
 
 func CreateEmailTemplates(c echo.Context) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

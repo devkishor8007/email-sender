@@ -24,6 +24,8 @@ func Route() *echo.Echo {
 		return c.String(http.StatusOK, "Hello, World!")
 	})
 
+	api.GET("/job", controllers.TestJob)
+
 	api.POST("/email-generates", controllers.CreateEmailTemplates)
 	api.GET("/email-generates", controllers.GetEmailTemplates)
 
