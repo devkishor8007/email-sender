@@ -23,10 +23,7 @@ func RunJob() {
 	s, _ := gocron.NewScheduler()
 
 	j, _ := s.NewJob(
-		gocron.CronJob(
-			"1 * * * *", 
-			false,
-		),
+		gocron.DurationJob(2*time.Second),
 		gocron.NewTask(
 			func(a string, b int) {
 				fmt.Println(a, b)
@@ -40,7 +37,6 @@ func RunJob() {
 
 	fmt.Println("start....")
 	go s.Start()
-
 }
 
 func TestJob(c echo.Context) error {
